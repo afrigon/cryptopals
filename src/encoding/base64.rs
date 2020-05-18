@@ -23,17 +23,15 @@ impl Encode for Base64 {
             encode_part(&input[i..i + 3], &mut output);
         }
 
-        if remainder != 0 {
-            if remainder == 1 {
-                output.push(CHAR_TABLE[first_subpart(input[len - 1]) as usize]);
-                output.push(CHAR_TABLE[second_subpart(input[len - 1], 0) as usize]);
-                output.push(PADDING);
-            } else if remainder == 2 {
-                output.push(CHAR_TABLE[first_subpart(input[len - 2]) as usize]);
-                output.push(CHAR_TABLE[second_subpart(input[len - 2], input[len - 1]) as usize]);
-                output.push(CHAR_TABLE[third_subpart(input[len - 1], 0) as usize]);
-            }
-
+        if remainder == 1 {
+            output.push(CHAR_TABLE[first_subpart(input[len - 1]) as usize]);
+            output.push(CHAR_TABLE[second_subpart(input[len - 1], 0) as usize]);
+            output.push(PADDING);
+            output.push(PADDING);
+        } else if remainder == 2 {
+            output.push(CHAR_TABLE[first_subpart(input[len - 2]) as usize]);
+            output.push(CHAR_TABLE[second_subpart(input[len - 2], input[len - 1]) as usize]);
+            output.push(CHAR_TABLE[third_subpart(input[len - 1], 0) as usize]);
             output.push(PADDING);
         }
 
