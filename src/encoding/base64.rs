@@ -1,4 +1,3 @@
-use crate::encoding::binary::{Binary, BinaryState};
 use crate::encoding::Encode;
 
 /// https://en.wikipedia.org/wiki/Base64#Base64_table

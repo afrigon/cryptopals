@@ -1,5 +1,4 @@
 mod base64;
-pub mod binary;
 
 pub use self::base64::Base64;
 
