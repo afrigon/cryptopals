@@ -20,7 +20,6 @@ impl Encode for Base64 {
         let mut output: String = String::with_capacity(len / 3 * 4 + 3);
 
         for i in (0..len - remainder).step_by(3) {
-            println!("{}", i);
             encode_part(&input[i..i + 3], &mut output);
         }
 
