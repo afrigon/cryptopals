@@ -29,20 +29,8 @@ mod set1 {
         let expected =
             unhex(b"436f6f6b696e67204d432773206c696b65206120706f756e64206f66206261636f6e");
 
-        let mut min = 1.0_f32;
-        let mut message: Vec<u8> = Vec::new();
-
-        for x in 0..=0xff {
-            let right = [x];
-            let result = xor(cipher.as_slice(), &right);
-            let frequencies = ascii_frequency(result.as_slice());
-            let score = is_english(&frequencies);
-
-            if score < min {
-                min = score;
-                message = result
-            }
-        }
+        let (key, _) = find_single_byte_xor(cipher.as_slice());
+        let message: Vec<u8> = xor(cipher.as_slice(), &[key]);
 
         assert_eq!(message, expected);
     }
@@ -51,25 +39,29 @@ mod set1 {
     fn challenge4() {
         let data =
             fs::read_to_string(format!("{}/{}", env!("CARGO_MANIFEST_DIR"), "res/s1c4")).unwrap();
-        let ciphers = data.split('\n');
+        let mut ciphers = data
+            .split('\n')
+            .map(|n| unhex(n.as_bytes()))
+            .collect::<Vec<Vec<u8>>>();
+
         let expected = unhex(b"4e6f77207468617420746865207061727479206973206a756d70696e670a");
 
         let mut min = 1.0_f32;
-        let mut message: Vec<u8> = Vec::new();
+        let mut key: u8 = 0x00;
+        let mut index = 0;
 
-        for cipher in ciphers {
-            for x in 0..=0xff {
-                let right = [x];
-                let result = xor(unhex(cipher.as_bytes()).as_slice(), &right);
-                let frequencies = ascii_frequency(result.as_slice());
-                let score = is_english(&frequencies);
+        for (i, cipher) in ciphers.iter().enumerate() {
+            let (k, score) = find_single_byte_xor(cipher.as_slice());
 
-                if score < min {
-                    min = score;
-                    message = result
-                }
+            if score < min {
+                index = i;
+                key = k;
+                min = score;
             }
         }
+
+        let cipher = &ciphers[index];
+        let message = xor(cipher.as_slice(), &[key]);
 
         assert_eq!(message, expected);
     }

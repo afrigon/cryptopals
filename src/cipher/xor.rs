@@ -1,3 +1,5 @@
+use crate::analysis::{ascii_frequency, hamming_distance, is_english};
+
 pub fn xor(left: &[u8], right: &[u8]) -> Vec<u8> {
     let left_len = left.len();
 
@@ -35,6 +37,32 @@ pub fn xor(left: &[u8], right: &[u8]) -> Vec<u8> {
     }
 
     output
+}
+
+pub fn find_single_byte_xor(input: &[u8]) -> (u8, f32) {
+    let scores = (0..=0xff)
+        .map(|n| xor(input, &[n]))
+        .map(|n| ascii_frequency(n.as_slice()))
+        .collect::<Vec<[f32; 26]>>()
+        .iter()
+        .map(is_english)
+        .collect::<Vec<f32>>();
+
+    let mut min: f32 = 1.0;
+    let mut byte: u8 = 0x00;
+
+    for (i, score) in scores.iter().enumerate() {
+        if *score < min {
+            min = *score;
+            byte = i as u8;
+        }
+    }
+
+    (byte, min)
+}
+
+pub fn find_vigenere_key(input: &[u8]) -> Vec<u8> {
+    Vec::new()
 }
 
 #[cfg(test)]
