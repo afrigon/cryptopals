@@ -1,6 +1,15 @@
 pub fn xor(left: &[u8], right: &[u8]) -> Vec<u8> {
     let left_len = left.len();
+
+    if left_len == 0 {
+        return right.to_vec();
+    }
+
     let right_len = right.len();
+
+    if right_len == 0 {
+        return left.to_vec();
+    }
 
     let mut ptr = 0;
 

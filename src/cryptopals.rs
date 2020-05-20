@@ -1,5 +1,6 @@
 mod set1 {
     use crate::*;
+    use std::fs;
 
     #[test]
     fn challenge1() {
@@ -28,7 +29,7 @@ mod set1 {
         let expected =
             unhex(b"436f6f6b696e67204d432773206c696b65206120706f756e64206f66206261636f6e");
 
-        let mut min = 100000.0_f32;
+        let mut min = 1.0_f32;
         let mut message: Vec<u8> = Vec::new();
 
         for x in 0..=0xff {
@@ -37,11 +38,36 @@ mod set1 {
             let frequencies = ascii_frequency(result.as_slice());
             let score = is_english(&frequencies);
 
-            println!("{}", score);
-
             if score < min {
                 min = score;
                 message = result
+            }
+        }
+
+        assert_eq!(message, expected);
+    }
+
+    #[test]
+    fn challenge4() {
+        let data =
+            fs::read_to_string(format!("{}/{}", env!("CARGO_MANIFEST_DIR"), "res/s1c4")).unwrap();
+        let ciphers = data.split('\n');
+        let expected = unhex(b"4e6f77207468617420746865207061727479206973206a756d70696e670a");
+
+        let mut min = 1.0_f32;
+        let mut message: Vec<u8> = Vec::new();
+
+        for cipher in ciphers {
+            for x in 0..=0xff {
+                let right = [x];
+                let result = xor(unhex(cipher.as_bytes()).as_slice(), &right);
+                let frequencies = ascii_frequency(result.as_slice());
+                let score = is_english(&frequencies);
+
+                if score < min {
+                    min = score;
+                    message = result
+                }
             }
         }
 
