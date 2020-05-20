@@ -25,24 +25,26 @@ mod set1 {
     #[test]
     fn challenge3() {
         let cipher = unhex(b"1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736");
-        let expected = b"Cooking MC's like a pound of bacon".to_vec();
+        let expected =
+            unhex(b"436f6f6b696e67204d432773206c696b65206120706f756e64206f66206261636f6e");
 
-        let mut max = 0;
-        let mut m: Vec<u8> = Vec::new();
+        let mut min = 100000.0_f32;
+        let mut message: Vec<u8> = Vec::new();
 
         for x in 0..=0xff {
             let right = [x];
             let result = xor(cipher.as_slice(), &right);
-            let score = ascii_frequency(result.as_slice());
+            let frequencies = ascii_frequency(result.as_slice());
+            let score = is_english(&frequencies);
 
-            if score > max {
-                max = score;
-                m = result
+            println!("{}", score);
+
+            if score < min {
+                min = score;
+                message = result
             }
         }
-        let mut y = Vec::new();
-        y[10] = 1;
 
-        assert_eq!(m, expected);
+        assert_eq!(message, expected);
     }
 }
