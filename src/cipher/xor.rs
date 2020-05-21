@@ -61,8 +61,41 @@ pub fn find_single_byte_xor(input: &[u8]) -> (u8, f32) {
     (byte, min)
 }
 
-pub fn find_vigenere_key(input: &[u8]) -> Vec<u8> {
-    Vec::new()
+pub fn find_repeating_xor_key(input: &[u8]) -> Vec<u8> {
+    let len = input.len();
+    let upper_bound = if len / 4 < 40 { len / 5 } else { 40 };
+
+    let mut min: f32 = 10000000.0;
+    let mut keylen = 0;
+
+    for i in 2..upper_bound {
+        let value = (hamming_distance(&input[0..i], &input[i..2 * i]) as f32 / i as f32
+            + hamming_distance(&input[0..i], &input[2 * i..3 * i]) as f32 / i as f32
+            + hamming_distance(&input[0..i], &input[3 * i..4 * i]) as f32 / i as f32
+            + hamming_distance(&input[i..2 * i], &input[2 * i..3 * i]) as f32 / i as f32
+            + hamming_distance(&input[i..2 * i], &input[3 * i..4 * i]) as f32 / i as f32
+            + hamming_distance(&input[2 * i..3 * i], &input[3 * i..4 * i]) as f32 / i as f32)
+            / 6.0;
+
+        if value < min {
+            min = value;
+            keylen = i;
+        }
+    }
+
+    let mut key = Vec::new();
+
+    for i in 0..keylen {
+        let block = input
+            .chunks(keylen)
+            .take(len / keylen)
+            .map(|n| n[i])
+            .collect::<Vec<u8>>();
+
+        key.push(find_single_byte_xor(block.as_slice()).0);
+    }
+
+    key
 }
 
 #[cfg(test)]
