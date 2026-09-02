@@ -1,0 +1,21 @@
+[settings]
+lockfile = true
+
+[tools]
+rust = "1.98"
+
+[tasks.build]
+description = "Build the library"
+run = "cargo build"
+
+[tasks.test]
+description = "Run the test suite"
+run = "cargo test"
+
+[tasks.lint]
+description = "Lint with clippy"
+run = "cargo clippy -- -D warnings"
+
+[tasks.format]
+description = "Format the source"
+run = "cargo fmt"
